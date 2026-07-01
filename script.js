@@ -10,6 +10,7 @@ const elements = {
   loadingState: document.querySelector("#loading-state"),
   errorState: document.querySelector("#error-state"),
   errorMessage: document.querySelector("#error-message"),
+  analyzerCard: document.querySelector("#analyzer-card"),
   profileCard: document.querySelector("#profile-card"),
   avatar: document.querySelector("#profile-avatar"),
   name: document.querySelector("#profile-name"),
@@ -34,6 +35,13 @@ const panelStates = {
 };
 
 let isLoading = false;
+const statAnimationFrames = new WeakMap();
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+);
+const supportsPointerEffects = window.matchMedia(
+  "(hover: hover) and (pointer: fine)",
+);
 
 function setPanelState(activeState) {
   Object.entries(panelStates).forEach(([state, element]) => {
@@ -99,6 +107,41 @@ function renderWebsite(website) {
   elements.blog.replaceChildren(link);
 }
 
+function animateNumber(element, value) {
+  const activeFrame = statAnimationFrames.get(element);
+
+  if (activeFrame) {
+    cancelAnimationFrame(activeFrame);
+  }
+
+  if (prefersReducedMotion.matches) {
+    element.textContent = value.toLocaleString();
+    return;
+  }
+
+  const duration = 700;
+  const startTime = performance.now();
+
+  function updateNumber(currentTime) {
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+    const easedProgress = 1 - (1 - progress) ** 3;
+    const currentValue = Math.round(value * easedProgress);
+
+    element.textContent = currentValue.toLocaleString();
+
+    if (progress === 1) {
+      statAnimationFrames.delete(element);
+      return;
+    }
+
+    const frame = requestAnimationFrame(updateNumber);
+    statAnimationFrames.set(element, frame);
+  }
+
+  const frame = requestAnimationFrame(updateNumber);
+  statAnimationFrames.set(element, frame);
+}
+
 function renderProfile(profile) {
   elements.avatar.src = profile.avatar_url;
   elements.avatar.alt = `${profile.login}'s GitHub avatar`;
@@ -114,14 +157,14 @@ function renderProfile(profile) {
         ? "Available for hire"
         : "Not available";
   elements.createdAt.textContent = formatDate(profile.created_at);
-  elements.followers.textContent = profile.followers.toLocaleString();
-  elements.following.textContent = profile.following.toLocaleString();
-  elements.repositories.textContent = profile.public_repos.toLocaleString();
-  elements.gists.textContent = profile.public_gists.toLocaleString();
   elements.profileLink.href = profile.html_url;
 
   renderWebsite(profile.blog);
   setPanelState("profile");
+  animateNumber(elements.followers, profile.followers);
+  animateNumber(elements.following, profile.following);
+  animateNumber(elements.repositories, profile.public_repos);
+  animateNumber(elements.gists, profile.public_gists);
 }
 
 function getRequestError(status) {
@@ -207,10 +250,46 @@ function handleInput() {
   }
 }
 
+function handleCardPointerMove(event) {
+  const bounds = elements.analyzerCard.getBoundingClientRect();
+  const horizontalPosition = (event.clientX - bounds.left) / bounds.width;
+  const verticalPosition = (event.clientY - bounds.top) / bounds.height;
+  const rotateX = (0.5 - verticalPosition) * 4;
+  const rotateY = (horizontalPosition - 0.5) * 5;
+
+  elements.analyzerCard.style.setProperty(
+    "--pointer-x",
+    `${horizontalPosition * 100}%`,
+  );
+  elements.analyzerCard.style.setProperty(
+    "--pointer-y",
+    `${verticalPosition * 100}%`,
+  );
+  elements.analyzerCard.style.setProperty("--tilt-x", `${rotateX}deg`);
+  elements.analyzerCard.style.setProperty("--tilt-y", `${rotateY}deg`);
+}
+
+function resetCardEffects() {
+  elements.analyzerCard.style.setProperty("--pointer-x", "50%");
+  elements.analyzerCard.style.setProperty("--pointer-y", "30%");
+  elements.analyzerCard.style.setProperty("--tilt-x", "0deg");
+  elements.analyzerCard.style.setProperty("--tilt-y", "0deg");
+}
+
+function initializePointerEffects() {
+  if (!supportsPointerEffects.matches || prefersReducedMotion.matches) {
+    return;
+  }
+
+  elements.analyzerCard.addEventListener("pointermove", handleCardPointerMove);
+  elements.analyzerCard.addEventListener("pointerleave", resetCardEffects);
+}
+
 function initializeApp() {
   setPanelState("placeholder");
   elements.form.addEventListener("submit", handleSubmit);
   elements.usernameInput.addEventListener("input", handleInput);
+  initializePointerEffects();
 }
 
 initializeApp();

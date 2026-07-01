@@ -11,10 +11,22 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <div class="ambient-scene" aria-hidden="true">
+      <span class="ambient-orb ambient-orb-one"></span>
+      <span class="ambient-orb ambient-orb-two"></span>
+      <span class="ambient-grid"></span>
+    </div>
+
     <main class="app">
-      <section class="analyzer-card" aria-labelledby="page-title">
+      <section
+        class="analyzer-card"
+        id="analyzer-card"
+        aria-labelledby="page-title"
+      >
+        <div class="card-light" aria-hidden="true"></div>
+
         <header class="app-header">
-          <p class="eyebrow">Developer insights</p>
+          <p class="eyebrow"><span></span> Developer insights</p>
           <h1 id="page-title">GitHub Profile Analyzer</h1>
           <p class="app-description">
             Enter a GitHub username to explore their public profile.
@@ -63,13 +75,17 @@
 
         <article class="profile-card" id="profile-card" hidden>
           <header class="profile-header">
-            <img
-              id="profile-avatar"
-              src=""
-              alt=""
-              width="120"
-              height="120"
-            >
+            <div class="avatar-shell">
+              <span class="avatar-orbit" aria-hidden="true"></span>
+              <img
+                id="profile-avatar"
+                src=""
+                alt=""
+                width="120"
+                height="120"
+              >
+              <span class="avatar-status" aria-hidden="true"></span>
+            </div>
             <div class="profile-identity">
               <h2 id="profile-name"></h2>
               <p id="profile-username"></p>

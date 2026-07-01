@@ -22,7 +22,7 @@ Enter a GitHub username and the analyzer presents the account's public informati
 | Profile details | Account statistics | Experience |
 | --- | --- | --- |
 | Avatar, name, and username | Followers and following | Responsive dark interface |
-| Bio, location, and company | Public repositories | Loading feedback |
+| Bio, location, and company | Public repositories | Pointer-reactive depth |
 | Website and hireable status | Public gists | Helpful error messages |
 | Account creation date | Direct profile link | Keyboard-friendly search |
 
@@ -88,6 +88,7 @@ Github-Profile-Analyzer/
 
 - Semantic HTML5
 - Modern CSS with custom properties, Grid, and Flexbox
+- Layered 3D transforms with reduced-motion fallbacks
 - Vanilla JavaScript using `async`/`await`
 - GitHub REST API
 
