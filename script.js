@@ -33,6 +33,8 @@ const panelStates = {
   error: elements.errorState,
 };
 
+let isLoading = false;
+
 function setPanelState(activeState) {
   Object.entries(panelStates).forEach(([state, element]) => {
     element.hidden = state !== activeState;
@@ -52,6 +54,17 @@ function clearFormMessage() {
   elements.formMessage.textContent = "";
   elements.formMessage.hidden = true;
   elements.usernameInput.removeAttribute("aria-invalid");
+}
+
+function setLoading(loading) {
+  isLoading = loading;
+  elements.searchButton.disabled = loading;
+  elements.searchButton.textContent = loading ? "Searching…" : "Analyze profile";
+  elements.statusPanel.setAttribute("aria-busy", String(loading));
+
+  if (loading) {
+    setPanelState("loading");
+  }
 }
 
 function formatDate(dateString) {
@@ -111,6 +124,28 @@ function renderProfile(profile) {
   setPanelState("profile");
 }
 
+function getRequestError(status) {
+  if (status === 404) {
+    return new Error(
+      "We couldn't find that GitHub user. Check the username and try again.",
+    );
+  }
+
+  if (status === 403 || status === 429) {
+    return new Error(
+      "GitHub's request limit has been reached. Please wait a little and try again.",
+    );
+  }
+
+  if (status >= 500) {
+    return new Error(
+      "GitHub is having trouble responding right now. Please try again shortly.",
+    );
+  }
+
+  return new Error("We couldn't load this profile. Please try again.");
+}
+
 async function fetchProfile(username) {
   const response = await fetch(
     `https://api.github.com/users/${encodeURIComponent(username)}`,
@@ -122,21 +157,27 @@ async function fetchProfile(username) {
   );
 
   if (!response.ok) {
-    throw new Error(`GitHub API request failed with status ${response.status}.`);
+    throw getRequestError(response.status);
   }
 
   return response.json();
 }
 
-function showTemporaryError() {
-  elements.placeholderTitle.textContent = "Unable to load this profile";
-  elements.placeholderMessage.textContent =
-    "Detailed error feedback will be added in the next development step.";
-  setPanelState("placeholder");
+function showError(error) {
+  const isNetworkError = error instanceof TypeError;
+
+  elements.errorMessage.textContent = isNetworkError
+    ? "A network error interrupted the request. Check your connection and try again."
+    : error.message;
+  setPanelState("error");
 }
 
 async function handleSubmit(event) {
   event.preventDefault();
+
+  if (isLoading) {
+    return;
+  }
 
   const username = elements.usernameInput.value.trim();
 
@@ -147,13 +188,16 @@ async function handleSubmit(event) {
   }
 
   clearFormMessage();
+  setLoading(true);
 
   try {
     const profile = await fetchProfile(username);
     renderProfile(profile);
   } catch (error) {
     console.error(error);
-    showTemporaryError();
+    showError(error);
+  } finally {
+    setLoading(false);
   }
 }
 

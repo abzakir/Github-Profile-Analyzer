@@ -193,6 +193,14 @@ h1 {
   transform: translateY(0);
 }
 
+.search-control button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
 .search-control button:focus-visible,
 .profile-link:focus-visible {
   outline: 3px solid rgba(34, 211, 238, 0.7);
@@ -203,6 +211,11 @@ h1 {
   margin: 10px 4px 0;
   color: var(--danger);
   font-size: 0.875rem;
+}
+
+.search-control input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.12);
 }
 
 .status-panel,
