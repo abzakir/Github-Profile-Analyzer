@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="description"
+      content="Analyze public GitHub profile details in a clean, modern interface."
+    >
+    <title>GitHub Profile Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="analyzer-card" aria-labelledby="page-title">
+        <header class="app-header">
+          <p class="eyebrow">Developer insights</p>
+          <h1 id="page-title">GitHub Profile Analyzer</h1>
+          <p class="app-description">
+            Enter a GitHub username to explore their public profile.
+          </p>
+        </header>
+
+        <form class="search-form" id="search-form" novalidate>
+          <label class="sr-only" for="username">GitHub username</label>
+          <div class="search-control">
+            <input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="e.g. octocat"
+              autocomplete="off"
+              autocapitalize="none"
+              spellcheck="false"
+              aria-describedby="form-message"
+              required
+            >
+            <button type="submit">Analyze profile</button>
+          </div>
+          <p class="form-message" id="form-message" role="alert" hidden></p>
+        </form>
+
+        <section class="status-panel" id="status-panel" aria-live="polite">
+          <div class="placeholder" id="placeholder">
+            <h2>Ready when you are</h2>
+            <p>Search for a username to see profile details and statistics.</p>
+          </div>
+
+          <div class="loading-state" id="loading-state" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <p>Fetching GitHub profile…</p>
+          </div>
+
+          <div class="error-state" id="error-state" hidden>
+            <h2>Profile unavailable</h2>
+            <p id="error-message">
+              We could not find that GitHub user. Check the username and try again.
+            </p>
+          </div>
+        </section>
+
+        <article class="profile-card" id="profile-card" hidden>
+          <header class="profile-header">
+            <img
+              id="profile-avatar"
+              src=""
+              alt=""
+              width="120"
+              height="120"
+            >
+            <div class="profile-identity">
+              <h2 id="profile-name"></h2>
+              <p id="profile-username"></p>
+              <p id="profile-bio"></p>
+            </div>
+          </header>
+
+          <dl class="profile-details">
+            <div>
+              <dt>Location</dt>
+              <dd id="profile-location"></dd>
+            </div>
+            <div>
+              <dt>Company</dt>
+              <dd id="profile-company"></dd>
+            </div>
+            <div>
+              <dt>Website</dt>
+              <dd id="profile-blog"></dd>
+            </div>
+            <div>
+              <dt>Hireable</dt>
+              <dd id="profile-hireable"></dd>
+            </div>
+            <div>
+              <dt>Joined GitHub</dt>
+              <dd id="profile-created"></dd>
+            </div>
+          </dl>
+
+          <dl class="profile-stats">
+            <div>
+              <dt>Followers</dt>
+              <dd id="profile-followers"></dd>
+            </div>
+            <div>
+              <dt>Following</dt>
+              <dd id="profile-following"></dd>
+            </div>
+            <div>
+              <dt>Repositories</dt>
+              <dd id="profile-repos"></dd>
+            </div>
+            <div>
+              <dt>Public gists</dt>
+              <dd id="profile-gists"></dd>
+            </div>
+          </dl>
+
+          <a
+            class="profile-link"
+            id="profile-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View GitHub profile
+          </a>
+        </article>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
