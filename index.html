@@ -35,15 +35,17 @@
               aria-describedby="form-message"
               required
             >
-            <button type="submit">Analyze profile</button>
+            <button id="search-button" type="submit">Analyze profile</button>
           </div>
           <p class="form-message" id="form-message" role="alert" hidden></p>
         </form>
 
         <section class="status-panel" id="status-panel" aria-live="polite">
           <div class="placeholder" id="placeholder">
-            <h2>Ready when you are</h2>
-            <p>Search for a username to see profile details and statistics.</p>
+            <h2 id="placeholder-title">Ready when you are</h2>
+            <p id="placeholder-message">
+              Search for a username to see profile details and statistics.
+            </p>
           </div>
 
           <div class="loading-state" id="loading-state" hidden>
